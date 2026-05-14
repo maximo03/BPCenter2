@@ -24,6 +24,11 @@ namespace BPCenter2.Services.Middleware
                 await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claim);
                 context.Response.Redirect("/");
             }
+            else if (context.Request.Path == "/logout-action")
+            {
+                await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                context.Response.Redirect("/AccountLogin");
+            }
             else
             {
                 await next(context);

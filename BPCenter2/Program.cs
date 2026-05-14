@@ -79,14 +79,6 @@ namespace BPCenter2
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
-            //<>
-            app.MapPost("/logout-action", async (HttpContext httpContext) =>
-            {
-                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                return Results.Redirect("/AccountLogin");
-            });
-            //</>
-
             app.Run();
         }
     }

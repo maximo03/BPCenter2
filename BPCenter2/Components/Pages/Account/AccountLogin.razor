@@ -4,11 +4,13 @@
 @using System.Security.Claims
 @using BPCenter2.Services.Middleware
 @using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Components.Authorization;
 
 
 @layout LoginLayout
 @inject ServicesLogin ServicesLogin
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider auth
 @inject ISnackbar Snackbar
 
 
@@ -23,8 +25,8 @@
             <MudImage Src="/img/icons/lock.png" Height="60" />
             <MudText Typo="Typo.h5" Class="mb-3">Iniciar Sesión</MudText>
         </center>
-        <MudTextField @bind-Value="Model.userEmail" Label="Correo" Disabled="_loading" />
-        <MudTextField @bind-Value="Model.userPassword" Label="Contraseña" InputType="InputType.Password" Disabled="_loading" />
+        <MudTextField @bind-Value="Model.userEmail" Label="Correo" Required Disabled="_loading" />
+        <MudTextField @bind-Value="Model.userPassword" Label="Contraseña" InputType="InputType.Password" Required Disabled="_loading" />
 
         <MudButton ButtonType="ButtonType.Submit"
                    Variant="Variant.Filled"
@@ -56,6 +58,15 @@
 
     private bool _loading = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await auth.GetAuthenticationStateAsync();
+        if (state.User.Identity!.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/", replace: true); 
+        }
+    }
+
     public async Task Login()
     {
 
@@ -67,7 +78,7 @@
             
             if (!user.IsAuthenticated)
             {
-                Snackbar.Add("Identificacion o contraseña incorrectos.", Severity.Error);
+                Snackbar.Add("Correo o contraseña incorrectos.", Severity.Error);
            
                 _loading = false;
                 return;
@@ -89,7 +100,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Ocurrió un error inesperado.", Severity.Error);
+            Snackbar.Add("Ocurrió un error inesperado: "+ex.Message, Severity.Error);
             _loading = false;
         }
     }
