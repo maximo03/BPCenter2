@@ -1,0 +1,98 @@
+﻿@page "/AccountLogin"
+@using BPCenter2.Models.DTOs
+@using BPCenter2.Services
+@using System.Security.Claims
+@using BPCenter2.Services.Middleware
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+
+@layout LoginLayout
+@inject ServicesLogin ServicesLogin
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+
+<PageTitle>Login</PageTitle>
+<center>
+    <MudImage Src="/img/icons/userg.png" Height="80" />
+</center>
+
+<MudPaper Class="pa-6 mx-auto mt-12" MaxWidth="400px">
+    <EditForm Model="@Model" OnValidSubmit="Login" FormName="LoginForm">
+        <center>
+            <MudImage Src="/img/icons/lock.png" Height="60" />
+            <MudText Typo="Typo.h5" Class="mb-3">Iniciar Sesión</MudText>
+        </center>
+        <MudTextField @bind-Value="Model.userEmail" Label="Correo" Disabled="_loading" />
+        <MudTextField @bind-Value="Model.userPassword" Label="Contraseña" InputType="InputType.Password" Disabled="_loading" />
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                    Color="Color.Primary"
+                   Class="mt-4"
+                   FullWidth="true"
+                   Disabled="_loading">
+            @if (_loading)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Procesando...</MudText>
+            }
+            else
+            {
+                <MudText>Entrar</MudText>
+            }
+        </MudButton>
+    </EditForm>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-7" />
+    }
+</MudPaper>
+
+@code {
+    [SupplyParameterFromForm]
+    public LoginDTO Model { get; set; } = new();
+
+    private bool _loading = false;
+
+    public async Task Login()
+    {
+
+        _loading = true;
+
+        try
+        {
+            LoginDTO user = await ServicesLogin.VerifyUser(Model.userEmail!, Model.userPassword!);
+            
+            if (!user.IsAuthenticated)
+            {
+                Snackbar.Add("Identificacion o contraseña incorrectos.", Severity.Error);
+           
+                _loading = false;
+                return;
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.userFullName!),
+                new Claim(ClaimTypes.Role, user.userRole!),
+                new Claim("email", user.userEmail!)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            Guid key = Guid.NewGuid();
+            AuthMiddleware.Logins[key] = claimsPrincipal;
+            
+            NavigationManager.NavigateTo($"/AccountLogin?key={key}", true);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Ocurrió un error inesperado.", Severity.Error);
+            _loading = false;
+        }
+    }
+}
+
+

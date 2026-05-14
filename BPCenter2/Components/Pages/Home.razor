@@ -1,0 +1,32 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize]
+<PageTitle>Home</PageTitle>
+
+<div class="row">
+    <div class="col-12">
+        <h2 class="fw-bolder">Hola es un gusto saludarte !</h2>
+    </div>
+
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <span> no login go to <a href="/AccountLogin">Login</a></span>
+                    </NotAuthorized>
+                    <Authorized>
+                        <span>Inicio de sesion exitoso <b>@context.User.Identity!.Name</b></span>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

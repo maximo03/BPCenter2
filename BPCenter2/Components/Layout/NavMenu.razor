@@ -1,0 +1,147 @@
+﻿
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager nav
+@inject IJSRuntime JS
+
+@* Overlay de pantalla completa *@
+<MudOverlay Visible="_isLoggingOut" DarkBackground="true" ZIndex="9999">
+    <div class="d-flex flex-column align-center">
+        <MudProgressCircular Color="Color.Error" Size="Size.Large" Indeterminate="true" />
+        <MudText Typo="Typo.h6" Color="Color.Inherit" Class="mt-4">Finalizando sesión segura...</MudText>
+    </div>
+</MudOverlay>
+
+<!----<MudOverlay Visible="_isLoggingOut"
+            DarkBackground="true"
+            ZIndex="9999"
+            AutoClose="false">
+    <div class="d-flex flex-column align-center">
+        <MudProgressCircular Color="Color.Error" Size="Size.Large" Indeterminate="true" />
+        <MudText Typo="Typo.h6" Color="Color.Inherit" Class="mt-4">Cerrando sesión segura...</MudText>
+    </div>
+</MudOverlay>--->
+
+    <div class="d-flex flex-column h-100">
+ 
+        <div class="flex-grow-1">
+            <MudNavMenu>
+     <AuthorizeView>
+    <Authorized>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Home">Inicio</MudNavLink>
+    <MudDivider />
+    </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Admin">
+    <Authorized>
+            <MudNavGroup Title="Enfermeria" Expanded="false">
+                <MudNavLink Href="/enfermeriaexpediente" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HealthAndSafety">Repositorio</MudNavLink>        
+                <MudNavLink Href="/enfermeriarecetas" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HealthAndSafety">Recetas</MudNavLink>
+                <MudNavLink Href="/enfermeriaexamenes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HealthAndSafety">Examenes</MudNavLink>
+            </MudNavGroup>
+    <MudDivider />
+    </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Admin,Administracion">
+        <Authorized>
+            <MudNavGroup Title="Mantenimiento" Expanded="false">
+            <MudNavLink Href="/AccountListUser" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MiscellaneousServices">Lista de usuarios</MudNavLink>
+            </MudNavGroup>
+            <MudDivider />
+        </Authorized>
+    </AuthorizeView>
+            </MudNavMenu>
+        </div>
+
+        <div class="pa-4">
+         <!--   <form action="logout-action" method="post">
+                <AntiforgeryToken />
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Error"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Logout">
+                    CERRAR SESIÓN
+                </MudButton>
+            </form> -->
+
+       <!-- <form action="logout-action" method="post">
+            <AntiforgeryToken />
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Error"
+                       FullWidth="true"
+                       Disabled="_isLoggingOut"
+                       OnClick="HandleLogoutClick"
+                       StartIcon="@(_isLoggingOut ? null : Icons.Material.Filled.Logout)">
+                @if (_isLoggingOut)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">CERRANDO...</MudText>
+                }
+                else
+                {
+                    <MudText>CERRAR SESIÓN</MudText>
+                }
+            </MudButton>
+        </form>-->
+
+    <form id="logoutForm" action="logout-action" method="post">
+        <AntiforgeryToken />
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Error"
+                   FullWidth="true"
+                   Disabled="_isLoggingOut"
+                   OnClick="HandleLogoutConRetraso"
+                   StartIcon="@Icons.Material.Filled.Logout">
+            @(_isLoggingOut ? "CERRANDO..." : "CERRAR SESIÓN")
+        </MudButton>
+    </form>
+
+        </div>
+
+    </div>
+
+  
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private bool _isLoggingOut = false;
+
+    private void HandleLogoutClick()
+    {
+        _isLoggingOut = true;
+    }
+
+
+
+    private async Task HandleLogoutConRetraso()
+    {
+        // 1. Mostrar el spinner
+        _isLoggingOut = true;
+        
+        // 2. Forzar a Blazor a renderizar el cambio inmediatamente
+        StateHasChanged();
+
+        // 3. Esperar el tiempo que desees (1500ms = 1.5 segundos)
+        await Task.Delay(1500);
+
+        // 4. Disparar el envío del formulario manualmente vía JS
+        // Esto enviará el POST a tu endpoint en Program.cs
+       // await JS.InvokeVoidAsync("document.getElementById('logoutForm').submit");
+        await JS.InvokeVoidAsync("submitForm", "logoutForm");
+    }
+
+}
+
+

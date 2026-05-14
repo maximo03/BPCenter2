@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+    "profiles": {
+      "http": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
+        "launchBrowser": true,
+        "applicationUrl": "http://localhost:5122",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "https": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
+        "launchBrowser": true,
+        "applicationUrl": "https://localhost:7040;http://localhost:5122",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "DB_SQL": "Data Source=192.168.1.14,1433;Initial Catalog=Modelo10;User ID=devdata;Password=maximonestor;MultipleActiveResultSets=True;Connect Timeout=100;Encrypt=False;Application Name=Modelo10"
+        }
+      }
+    }
+  }
