@@ -16,17 +16,18 @@
 
 <PageTitle>Login</PageTitle>
 <center>
-    <MudImage Src="/img/icons/userg.png" Height="80" />
+    <MudImage Src="/img/icons/phone.png" Height="80" />
 </center>
 
 <MudPaper Class="pa-6 mx-auto mt-12" MaxWidth="400px">
     <EditForm Model="@Model" OnValidSubmit="Login" FormName="LoginForm">
+        <DataAnnotationsValidator />
         <center>
             <MudImage Src="/img/icons/lock.png" Height="60" />
             <MudText Typo="Typo.h5" Class="mb-3">Iniciar Sesión</MudText>
         </center>
-        <MudTextField @bind-Value="Model.userEmail" Label="Correo" Required Disabled="_loading" />
-        <MudTextField @bind-Value="Model.userPassword" Label="Contraseña" InputType="InputType.Password" Required Disabled="_loading" />
+        <MudTextField @bind-Value="Model.userEmail" Label="Correo" Required="true" RequiredError="Por favor debe, escribir un Correo" InputType="InputType.Email" Disabled="_loading" />
+        <MudTextField @bind-Value="Model.userPassword" Label="Contraseña" Required="true" RequiredError="Por favor debe, escribir una Contraseña" InputType="InputType.Password" Disabled="_loading" />
 
         <MudButton ButtonType="ButtonType.Submit"
                    Variant="Variant.Filled"

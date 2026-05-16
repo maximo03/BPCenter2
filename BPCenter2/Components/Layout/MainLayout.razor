@@ -11,25 +11,21 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">HCP</MudText>
-        <MudSpacer />
 
-            <AuthorizeView>
-             <Authorized>
-                <MudText Class="ml-3">@vuser</MudText>
-             </Authorized>
-           </AuthorizeView>
+        <MudImage Src="/img/icons/phone.png" Height="50" />
+        <MudSpacer />
 
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" Edge="Edge.End" />
 
         <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+            <MudMenuItem>
+                
+                <div class="d-flex justify-center w-100">
+                    <MudImage Src="/img/icons/userg.png" Width="60" Height="60" Class="mr-3" />
+                </div>
+            </MudMenuItem>
             <MudMenuItem Label="@vemail" />
             <MudMenuItem Label=@($"Role: {vrole}") />
-
-            @* Envolvemos el formulario en un item de menú para heredar el padding *@
-            <MudMenuItem Disabled="true" Class="d-flex justify-center py-2">
-
-            </MudMenuItem>
         </MudMenu>
 
     </MudAppBar>
@@ -97,11 +93,22 @@
         }
     }
 
+    public string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        true => Icons.Material.Filled.LightMode,
+        false => Icons.Material.Filled.DarkMode,
+    };
 
-    // protected override void OnInitialized()
-    // {
-    //     base.OnInitialized();
-    // }
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+
+    }
 
     private readonly PaletteLight _lightPalette = new()
     {
@@ -159,23 +166,6 @@
         GrayLighter = "#23233a",
         OverlayLight = "#23233a80",
     };
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Filled.LightMode,
-        false => Icons.Material.Filled.DarkMode,
-    };
-
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
-
-    }
 
 
     private readonly Shadow _customShadows = new()
